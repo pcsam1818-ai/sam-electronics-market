@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAM ELECTRONICS MARKET | Videojuegos y Electrónica</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        sam: {
+                            dark: '#004D25',      /* Verde San Patricio profundo */
+                            primary: '#009A44',   /* Verde San Patricio clásico vibrante */
+                            light: '#16A34A',     /* Verde trébol brillante */
+                            accent: '#4ADE80',    /* Verde menta luminoso */
+                            silver: '#E2E8F0',
+                            metal: '#94A3B8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Efecto metálico inspirado en el logotipo */
+        .metallic-gradient {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+        }
+        /* Degradado Verde San Patricio */
+        .emerald-gradient {
+            background: linear-gradient(135deg, #004D25 0%, #008037 55%, #009A44 100%);
+        }
+        /* Animaciones suaves */
+        .card-hover {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(0, 154, 68, 0.28);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased flex flex-col min-h-screen">
+
+    <!-- Notificación Flotante (Reemplazo seguro de alert) -->
+    <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Barra de Navegación Superior -->
+    <header class="emerald-gradient text-white shadow-lg sticky top-0 z-40 border-b border-emerald-700/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo y Marca (Recreación vectorial fiel a tu imagen) -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="resetFilters()">
+                    <div class="w-12 h-12 rounded-full metallic-gradient p-0.5 shadow-md flex items-center justify-center border-2 border-green-300 shrink-0">
+                        <svg viewBox="0 0 100 100" class="w-full h-full">
+                            <circle cx="50" cy="50" r="46" fill="#009A44" stroke="#E2E8F0" stroke-width="4"/>
+                            <!-- Control de videojuegos estilizado -->
+                            <path d="M28 52 C24 52 20 60 22 68 C23 72 28 73 32 69 L38 62 L62 62 L68 69 C72 73 77 72 78 68 C80 60 76 52 72 52 C68 46 60 45 50 45 C40 45 32 46 28 52 Z" fill="#E2E8F0"/>
+                            <path d="M33 53 V59 M30 56 H36" stroke="#004D25" stroke-width="2.5" stroke-linecap="round"/>
+                            <circle cx="65" cy="54" r="2" fill="#004D25"/>
+                            <circle cx="69" cy="57" r="2" fill="#004D25"/>
+                            <!-- Laptop/Pantalla superior -->
+                            <rect x="38" y="24" width="24" height="16" rx="2" fill="#E2E8F0"/>
+                            <rect x="41" y="27" width="18" height="10" fill="#16A34A"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-lg sm:text-xl tracking-tight leading-none text-white">
+                            SAM ELECTRONICS
+                        </h1>
+                        <span class="text-xs font-semibold tracking-widest text-green-300 uppercase block mt-0.5">
+                            MARKET • NUEVOS • USADOS • REPUESTOS
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción (Admin & Contacto) -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button onclick="toggleAdminMode()" id="btn-admin-toggle" class="px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition flex items-center gap-2">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span class="hidden sm:inline">Modo Administrador</span>
+                        <span class="sm:hidden">Admin</span>
+                    </button>
+                    <button onclick="openChatWidget()" class="px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-400 hover:bg-emerald-300 text-sam-dark shadow-md transition flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>Contactar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner Informativo de Envíos y Modalidades -->
+    <div class="bg-slate-900 text-slate-200 text-xs sm:text-sm py-2.5 px-4 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center sm:justify-between gap-2 text-center">
+            <div class="flex items-center gap-4 flex-wrap justify-center">
+                <span class="inline-flex items-center gap-1.5 text-emerald-400 font-medium">
+                    <i class="fa-solid fa-truck-fast"></i> Envíos Nacionales Cobro a Destino (Zoom / MRW / Tealca)
+                </span>
+                <span class="hidden md:inline text-slate-600">|</span>
+                <span class="inline-flex items-center gap-1.5 text-slate-200 font-medium">
+                    <i class="fa-solid fa-handshake"></i> Entregas Personales Previo Acuerdo
+                </span>
+            </div>
+            <div class="text-slate-400 text-xs" id="header-contact-preview">
+                Atención directa por WhatsApp y Correo
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de Administrador (Oculto por defecto, activable con el botón) -->
+    <section id="admin-panel" class="hidden bg-emerald-950 text-white border-b-4 border-emerald-500 shadow-inner">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-emerald-800">
+                <div>
+                    <h2 class="text-lg font-bold flex items-center gap-2 text-emerald-300">
+                        <i class="fa-solid fa-toolbox"></i> Panel de Gestión de Tienda
+                    </h2>
+                    <p class="text-xs text-emerald-200/80 mt-0.5">Agrega nuevos artículos, edita precios o actualiza tu número de WhatsApp y correo de recepción.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="openProductModal()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-sam-dark font-bold text-sm shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Cargar Nuevo Producto
+                    </button>
+                    <button onclick="openSettingsModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm border border-slate-600 transition flex items-center gap-2">
+                        <i class="fa-solid fa-gear"></i> Configurar WhatsApp / Correo
+                    </button>
+                    <button onclick="openPasswordModal()" class="px-4 py-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 text-emerald-200 font-semibold text-sm border border-emerald-700 transition flex items-center gap-2">
+                        <i class="fa-solid fa-key"></i> Cambiar Clave
+                    </button>
+                    <button onclick="logoutAdmin()" class="px-4 py-2.5 rounded-xl bg-red-600/90 hover:bg-red-600 text-white font-semibold text-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-lock"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Buscador y Filtros Rápidos -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                <!-- Barra de búsqueda -->
+                <div class="md:col-span-5 relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="search-input" oninput="renderProducts()" placeholder="Buscar consola, control, repuesto, laptop..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sam-primary focus:border-transparent text-sm">
+                </div>
+
+                <!-- Filtro por Categoría -->
+                <div class="md:col-span-4">
+                    <select id="category-filter" onchange="renderProducts()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-sam-primary text-sm font-medium text-slate-700">
+                        <option value="all">Todas las Categorías</option>
+                        <option value="Consolas y Videojuegos">Consolas y Videojuegos</option>
+                        <option value="Electrónica y Laptops">Electrónica y Laptops</option>
+                        <option value="Repuestos y Componentes">Repuestos y Componentes</option>
+                        <option value="Accesorios y Cables">Accesorios y Cables</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Condición (Nuevo, Usado, Repuesto) -->
+                <div class="md:col-span-3">
+                    <select id="condition-filter" onchange="renderProducts()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-sam-primary text-sm font-medium text-slate-700">
+                        <option value="all">Cualquier Estado</option>
+                        <option value="Nuevo">🟢 Nuevo</option>
+                        <option value="Usado">🟡 Usado (Operativo)</option>
+                        <option value="Para Repuesto">🔴 Para Repuesto</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Pestañas visuales por categoría -->
+            <div class="flex items-center gap-2 overflow-x-auto pt-4 mt-4 border-t border-slate-100 pb-1 no-scrollbar">
+                <button onclick="setQuickCategory('all')" class="cat-pill active px-3.5 py-1.5 rounded-full text-xs font-semibold bg-sam-primary text-white whitespace-nowrap transition">
+                    Todos los artículos
+                </button>
+                <button onclick="setQuickCategory('Consolas y Videojuegos')" class="cat-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap transition">
+                    🎮 Consolas y Videojuegos
+                </button>
+                <button onclick="setQuickCategory('Electrónica y Laptops')" class="cat-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap transition">
+                    💻 Electrónica y Laptops
+                </button>
+                <button onclick="setQuickCategory('Repuestos y Componentes')" class="cat-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap transition">
+                    🔧 Repuestos y Piezas
+                </button>
+                <button onclick="setQuickCategory('Accesorios y Cables')" class="cat-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap transition">
+                    🔌 Accesorios
+                </button>
+            </div>
+        </div>
+
+        <!-- Contador de resultados -->
+        <div class="flex items-center justify-between mb-5">
+            <h2 class="text-lg sm:text-xl font-bold text-slate-800" id="catalog-title">Catálogo Disponible</h2>
+            <span class="text-xs sm:text-sm font-medium text-slate-500 bg-white px-3 py-1 rounded-full border border-slate-200" id="results-count">
+                0 productos
+            </span>
+        </div>
+
+        <!-- Cuadrícula de Productos -->
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Las tarjetas se generan dinámicamente con JavaScript -->
+        </div>
+
+        <!-- Estado vacío si no hay coincidencias -->
+        <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200">
+            <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-700">No se encontraron artículos</h3>
+            <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">Intenta cambiar los filtros de búsqueda o activa el Modo Administrador para cargar un producto nuevo.</p>
+            <button onclick="resetFilters()" class="mt-4 px-4 py-2 rounded-xl bg-sam-primary text-white text-sm font-semibold hover:bg-sam-dark transition">
+                Ver todo el catálogo
+            </button>
+        </div>
+    </main>
+
+    <!-- Sección de Garantías y Envíos -->
+    <section class="bg-white border-t border-slate-200 py-10 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-100 text-sam-primary flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-truck-ramp-box"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm sm:text-base">Envíos Cobro a Destino</h3>
+                        <p class="text-xs sm:text-sm text-slate-600 mt-1">Despachamos a todo el país por Zoom, MRW y Tealca. Tu paquete viaja asegurado y con número de guía.</p>
+                    </div>
+                </div>
+                <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-100 text-sam-primary flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-handshake-simple"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm sm:text-base">Entrega Personal</h3>
+                        <p class="text-xs sm:text-sm text-slate-600 mt-1">Coordinamos entregas personales en puntos céntricos y seguros para que revises tu equipo con tranquilidad.</p>
+                    </div>
+                </div>
+                <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-100 text-sam-primary flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm sm:text-base">Transparencia Total</h3>
+                        <p class="text-xs sm:text-sm text-slate-600 mt-1">Especificamos claramente si cada artículo es Nuevo, Usado operativo o para Repuesto/Técnicos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="bg-sam-dark text-slate-300 py-8 border-t border-emerald-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-center sm:text-left">
+                <p class="font-bold text-white tracking-wide">SAM ELECTRONICS MARKET</p>
+                <p class="text-xs text-emerald-300/80 mt-0.5">Videojuegos • Electrónica • Nuevos • Usados • Repuestos</p>
+            </div>
+            <div class="flex items-center gap-4 text-sm">
+                <button onclick="openChatWidget()" class="hover:text-emerald-300 transition flex items-center gap-1.5">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </button>
+                <span class="text-emerald-800">•</span>
+                <button onclick="openChatWidget('email')" class="hover:text-emerald-300 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-envelope"></i> Correo
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- MODAL DE INICIO DE SESIÓN ADMINISTRADOR    -->
+    <!-- ========================================== -->
+    <div id="admin-login-modal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="emerald-gradient px-6 py-4 text-white flex items-center justify-between">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-emerald-300"></i> Acceso Exclusivo Admin
+                </h3>
+                <button onclick="closeLoginModal()" class="text-white/80 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="verifyAdminLogin(event)" class="p-6 space-y-4">
+                <p class="text-xs text-slate-600">
+                    Ingresa tu clave de administrador para gestionar productos, precios y datos de la tienda.
+                </p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña de Administrador</label>
+                    <div class="relative">
+                        <input type="password" id="admin-pass-input" required placeholder="Ingresa tu clave..." class="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                        <button type="button" onclick="togglePassVisibility('admin-pass-input', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <p id="login-error-msg" class="hidden text-xs text-red-600 font-semibold mt-1.5">
+                        <i class="fa-solid fa-circle-exclamation"></i> Clave incorrecta. Acceso denegado.
+                    </p>
+                    <p class="text-[11px] text-slate-400 mt-2">
+                        Clave inicial predeterminada: <span class="font-mono font-bold text-slate-600">SAM2026</span> (puedes cambiarla al entrar).
+                    </p>
+                </div>
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeLoginModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-bold bg-sam-primary text-white hover:bg-sam-dark shadow">Desbloquear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL PARA CAMBIAR CLAVE DE ADMINISTRADOR  -->
+    <!-- ========================================== -->
+    <div id="password-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="bg-slate-900 px-6 py-4 text-white flex items-center justify-between">
+                <h3 class="font-bold text-base"><i class="fa-solid fa-key mr-2 text-emerald-400"></i>Cambiar Clave de Admin</h3>
+                <button onclick="closePasswordModal()" class="text-white/80 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="saveNewPassword(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Clave Actual</label>
+                    <input type="password" id="current-admin-pass" required placeholder="Ingresa clave actual" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nueva Clave</label>
+                    <input type="password" id="new-admin-pass" required minlength="4" placeholder="Mínimo 4 caracteres" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closePasswordModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-bold bg-sam-primary text-white hover:bg-sam-dark">Guardar Clave</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL PARA AGREGAR / EDITAR PRODUCTO       -->
+    <!-- ========================================== -->
+    <div id="product-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden my-8">
+            <div class="emerald-gradient px-6 py-4 text-white flex items-center justify-between">
+                <h3 class="font-bold text-base" id="modal-product-title">Cargar Nuevo Artículo</h3>
+                <button onclick="closeProductModal()" class="text-white/80 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="product-form" onsubmit="saveProduct(event)" class="p-6 space-y-4">
+                <input type="hidden" id="prod-id">
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre del Artículo *</label>
+                    <input type="text" id="prod-name" required placeholder="Ej: Consola PS4 Slim 1TB + 2 Controles" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Precio (USD $) *</label>
+                        <input type="number" step="0.01" min="0" id="prod-price" required placeholder="0.00" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Estado / Condición *</label>
+                        <select id="prod-condition" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                            <option value="Nuevo">Nuevo</option>
+                            <option value="Usado">Usado (Operativo)</option>
+                            <option value="Para Repuesto">Para Repuesto</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Categoría *</label>
+                    <select id="prod-category" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                        <option value="Consolas y Videojuegos">Consolas y Videojuegos</option>
+                        <option value="Electrónica y Laptops">Electrónica y Laptops</option>
+                        <option value="Repuestos y Componentes">Repuestos y Componentes</option>
+                        <option value="Accesorios y Cables">Accesorios y Cables</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Foto del Artículo (Desde Galería o URL)</label>
+                    <div class="flex flex-col gap-2.5">
+                        <label for="prod-file" class="cursor-pointer w-full px-4 py-3 rounded-xl border-2 border-dashed border-emerald-400 bg-emerald-50/70 hover:bg-emerald-100/70 text-sam-dark text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition">
+                            <i class="fa-solid fa-images text-base text-sam-primary"></i>
+                            <span>Elegir foto de la galería</span>
+                        </label>
+                        <input type="file" id="prod-file" accept="image/*" onchange="handleGalleryUpload(event)" class="hidden">
+
+                        <!-- Vista previa de la foto seleccionada -->
+                        <div id="prod-image-preview-box" class="hidden relative rounded-xl overflow-hidden border border-slate-200 bg-slate-100 h-36">
+                            <img id="prod-image-preview" src="" alt="Vista previa" class="w-full h-full object-cover">
+                            <button type="button" onclick="clearProductImage()" title="Quitar imagen" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-600 text-white text-xs flex items-center justify-center shadow hover:bg-red-700">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <input type="text" id="prod-image" oninput="updatePreviewFromUrl(this.value)" placeholder="O pega aquí el enlace URL de una imagen (opcional)" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Descripción Detallada *</label>
+                    <textarea id="prod-desc" rows="3" required placeholder="Indica detalles, accesorios incluidos, fallas (si es repuesto) o garantía..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-sam-primary focus:outline-none"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-bold bg-sam-primary text-white hover:bg-sam-dark shadow">Guardar Producto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL CONFIGURAR WHATSAPP Y CORREO         -->
+    <!-- ========================================== -->
+    <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="bg-slate-900 px-6 py-4 text-white flex items-center justify-between">
+                <h3 class="font-bold text-base"><i class="fa-solid fa-gear mr-2 text-emerald-400"></i>Datos de Contacto de la Tienda</h3>
+                <button onclick="closeSettingsModal()" class="text-white/80 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="saveSettings(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Número de WhatsApp (con código de país)</label>
+                    <input type="text" id="set-whatsapp" required placeholder="Ej: 58424908746" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                    <p class="text-[11px] text-slate-500 mt-1">Escribe el número sin el símbolo + ni espacios.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico de Ventas</label>
+                    <input type="email" id="set-email" required placeholder="ventas@samelectronics.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-bold bg-sam-primary text-white hover:bg-sam-dark">Actualizar Datos</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- WIDGET FLOTANTE DE CHAT (WHATSAPP / EMAIL) -->
+    <!-- ========================================== -->
+    <div class="fixed bottom-5 right-5 z-40">
+        <!-- Ventana de Chat -->
+        <div id="chat-window" class="hidden mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="emerald-gradient p-4 text-white flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-emerald-300">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm leading-tight">SAM ELECTRONICS CHAT</h4>
+                        <p class="text-[11px] text-emerald-200">Respuesta rápida por WhatsApp o Correo</p>
+                    </div>
+                </div>
+                <button onclick="toggleChatWidget()" class="text-white/80 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-4 bg-slate-50 space-y-3 text-xs sm:text-sm">
+                <div class="bg-white p-3 rounded-xl border border-slate-200/80 text-slate-600 text-xs shadow-sm">
+                    👋 ¡Hola! Escríbenos tu consulta o selecciona cómo deseas recibir tu pedido (<strong>Cobro a destino</strong> o <strong>Entrega personal</strong>).
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Tu Nombre</label>
+                    <input type="text" id="chat-name" placeholder="Ej: Carlos Pérez" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Artículo de Interés</label>
+                    <input type="text" id="chat-product" placeholder="Consulta general o nombre del equipo" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Método de Entrega Preferido</label>
+                    <select id="chat-delivery" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white focus:ring-2 focus:ring-sam-primary focus:outline-none">
+                        <option value="Envío Cobro a Destino (Zoom / MRW / Tealca)">🚚 Envío Cobro a Destino (Zoom / MRW / Tealca)</option>
+                        <option value="Entrega Personal">🤝 Entrega Personal (Previo acuerdo)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Mensaje</label>
+                    <textarea id="chat-message" rows="2" placeholder="Hola, quisiera consultar disponibilidad y detalles..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-sam-primary focus:outline-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button type="button" onclick="sendToWhatsApp()" class="py-2.5 px-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow transition">
+                        <i class="fa-brands fa-whatsapp text-base"></i> Enviar WhatsApp
+                    </button>
+                    <button type="button" onclick="sendToEmail()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow transition">
+                        <i class="fa-solid fa-envelope"></i> Enviar Correo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón Burbuja Flotante -->
+        <button onclick="toggleChatWidget()" class="ml-auto w-14 h-14 rounded-full emerald-gradient text-white shadow-xl hover:scale-105 transition flex items-center justify-center border-2 border-emerald-300 relative">
+            <i class="fa-solid fa-comments text-2xl"></i>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-white"></span>
+        </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN       -->
+    <!-- ========================================== -->
+    <div id="delete-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-center">
+            <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-base">¿Eliminar este artículo?</h3>
+            <p class="text-xs text-slate-500 mt-1">Esta acción quitará el producto del catálogo actual.</p>
+            <div class="flex items-center justify-center gap-3 mt-5">
+                <button onclick="closeDeleteModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">Cancelar</button>
+                <button id="confirm-delete-btn" class="px-4 py-2 rounded-xl text-xs font-bold bg-red-600 text-white hover:bg-red-700">Sí, Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ESTADO INICIAL EN MEMORIA DE LA TIENDA
+        // ==========================================
+        let isAdminMode = false;
+        let productToDeleteId = null;
+        let adminPassword = "SAM" + "2026";
+        let isAuthenticated = false;
+
+        try {
+            const savedPass = sessionStorage.getItem('sam_admin_pass');
+            if (savedPass) adminPassword = savedPass;
+            isAuthenticated = sessionStorage.getItem('sam_admin_auth') === 'true';
+        } catch (err) {
+            // Continuar en memoria si el navegador restringe sessionStorage
+        }
+
+        // Configuración editable de WhatsApp y Correo
+        let storeSettings = {
+            whatsapp: "58424908746",
+            email: "contacto@samelectronicsmarket.com"
+        };
+
+        // Catálogo inicial de muestra (Nuevos, Usados y Repuestos)
+        let products = [
+            {
+                id: 1,
+                name: "Control DualSense PS5 Blanco Original",
+                price: 68.00,
+                condition: "Nuevo",
+                category: "Consolas y Videojuegos",
+                image: "https://images.unsplash.com/photo-1606318801954-d46d46d3360a?auto=format&fit=crop&w=600&q=80",
+                description: "Totalmente nuevo en caja sellada. Retroalimentación háptica y gatillos adaptativos. Garantía de tienda."
+            },
+            {
+                id: 2,
+                name: "Consola Nintendo Switch V2 + Joy-Con",
+                price: 215.00,
+                condition: "Usado",
+                category: "Consolas y Videojuegos",
+                image: "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?auto=format&fit=crop&w=600&q=80",
+                description: "En excelente estado estético y funcional (9/10). Incluye dock original, cargador, cable HDMI y mica protectora instalada."
+            },
+            {
+                id: 3,
+                name: "Placa Base PS4 Slim (Para Repuesto / Técnicos)",
+                price: 35.00,
+                condition: "Para Repuesto",
+                category: "Repuestos y Componentes",
+                image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+                description: "Tarjeta madre modelo SAD-001. Presenta falla en circuito HDMI, ideal para extracción de integrados, lector o reballing."
+            },
+            {
+                id: 4,
+                name: "Laptop Dell Latitude Core i5 8GB RAM / 256GB SSD",
+                price: 240.00,
+                condition: "Usado",
+                category: "Electrónica y Laptops",
+                image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=600&q=80",
+                description: "Equipo corporativo revisado, batería con más de 3 horas de autonomía, cargador original incluido. Lista para trabajar o estudiar."
+            },
+            {
+                id: 5,
+                name: "Kit Analógicos 3D Magnéticos Hall Effect (PS4 / PS5)",
+                price: 12.50,
+                condition: "Nuevo",
+                category: "Repuestos y Componentes",
+                image: "https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=600&q=80",
+                description: "Par de joysticks electromagnéticos anti-drift de alta precisión para reparación definitiva de mandos DualShock 4 y DualSense."
+            },
+            {
+                id: 6,
+                name: "Cargador Rápido USB-C 65W GaN Multi-Puerto",
+                price: 24.00,
+                condition: "Nuevo",
+                category: "Accesorios y Cables",
+                image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=600&q=80",
+                description: "Compatible con Nintendo Switch, Steam Deck, laptops y teléfonos. Protección contra sobrecargas."
+            }
+        ];
+
+        // ==========================================
+        // RENDERIZADO Y FILTRADO DE PRODUCTOS
+        // ==========================================
+        function getConditionBadge(condition) {
+            if (condition === 'Nuevo') {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Nuevo</span>`;
+            }
+            if (condition === 'Usado') {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Usado</span>`;
+            }
+            return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span> Para Repuesto</span>`;
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const emptyState = document.getElementById('empty-state');
+            const countLabel = document.getElementById('results-count');
+
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const categoryFilter = document.getElementById('category-filter').value;
+            const conditionFilter = document.getElementById('condition-filter').value;
+
+            const filtered = products.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(searchTerm) || 
+                                      p.description.toLowerCase().includes(searchTerm) ||
+                                      p.category.toLowerCase().includes(searchTerm);
+                const matchesCat = categoryFilter === 'all' || p.category === categoryFilter;
+                const matchesCond = conditionFilter === 'all' || p.condition === conditionFilter;
+                return matchesSearch && matchesCat && matchesCond;
+            });
+
+            countLabel.textContent = `${filtered.length} ${filtered.length === 1 ? 'producto' : 'productos'}`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            const fallbackImg = "https://placehold.co/600x400/004D25/E2E8F0?text=SAM+ELECTRONICS";
+
+            grid.innerHTML = filtered.map(product => `
+                <article class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm card-hover flex flex-col justify-between">
+                    <div>
+                        <!-- Imagen y Etiquetas -->
+                        <div class="relative h-48 bg-slate-100 overflow-hidden">
+                            <img src="${product.image || fallbackImg}" 
+                                 onerror="this.onerror=null;this.src='${fallbackImg}';" 
+                                 alt="${product.name}" 
+                                 class="w-full h-full object-cover">
+                            <div class="absolute top-3 left-3">
+                                ${getConditionBadge(product.condition)}
+                            </div>
+                            <div class="absolute bottom-3 right-3 bg-slate-900/85 backdrop-blur-sm text-white px-3 py-1 rounded-xl font-extrabold text-base shadow">
+                                $${Number(product.price).toFixed(2)}
+                            </div>
+                        </div>
+
+                        <!-- Información del Artículo -->
+                        <div class="p-5">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-sam-primary">
+                                ${product.category}
+                            </span>
+                            <h3 class="font-bold text-slate-800 text-base sm:text-lg mt-1 leading-snug">
+                                ${product.name}
+                            </h3>
+                            <p class="text-xs sm:text-sm text-slate-600 mt-2 line-clamp-3 leading-relaxed">
+                                ${product.description}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Pie de Tarjeta (Acciones de Cliente o Administrador) -->
+                    <div class="px-5 pb-5 pt-2">
+                        ${isAdminMode ? `
+                            <div class="grid grid-cols-2 gap-2 pt-3 border-t border-slate-100">
+                                <button onclick="openProductModal(${product.id})" class="py-2 px-3 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                                    <i class="fa-solid fa-pen-to-square"></i> Editar
+                                </button>
+                                <button onclick="askDeleteProduct(${product.id})" class="py-2 px-3 rounded-xl bg-red-100 hover:bg-red-200 text-red-800 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>
+                            </div>
+                        ` : `
+                            <button onclick="inquireProduct('${product.name.replace(/'/g, "\\'")}', ${product.price})" class="w-full py-2.5 px-4 rounded-xl bg-sam-primary hover:bg-sam-dark text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition">
+                                <i class="fa-brands fa-whatsapp text-emerald-300 text-base"></i>
+                                <span>Me interesa / Consultar</span>
+                            </button>
+                        `}
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function setQuickCategory(cat) {
+            document.getElementById('category-filter').value = cat;
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                btn.classList.remove('bg-sam-primary', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            if (window.event && window.event.target) {
+                window.event.target.classList.remove('bg-slate-100', 'text-slate-600');
+                window.event.target.classList.add('bg-sam-primary', 'text-white');
+            }
+            renderProducts();
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('category-filter').value = 'all';
+            document.getElementById('condition-filter').value = 'all';
+            document.querySelectorAll('.cat-pill').forEach((btn, idx) => {
+                if (idx === 0) {
+                    btn.classList.add('bg-sam-primary', 'text-white');
+                    btn.classList.remove('bg-slate-100', 'text-slate-600');
+                } else {
+                    btn.classList.remove('bg-sam-primary', 'text-white');
+                    btn.classList.add('bg-slate-100', 'text-slate-600');
+                }
+            });
+            renderProducts();
+        }
+
+        // ==========================================
+        // MODO ADMINISTRADOR Y SEGURIDAD
+        // ==========================================
+        function toggleAdminMode() {
+            if (!isAuthenticated) {
+                openLoginModal();
+                return;
+            }
+            setAdminPanelState(!isAdminMode);
+        }
+
+        function setAdminPanelState(active) {
+            isAdminMode = active;
+            const panel = document.getElementById('admin-panel');
+            const btn = document.getElementById('btn-admin-toggle');
+            
+            if (isAdminMode) {
+                panel.classList.remove('hidden');
+                btn.classList.add('bg-emerald-400', 'text-sam-dark', 'font-bold');
+                btn.classList.remove('bg-white/10', 'text-white');
+                btn.innerHTML = `<i class="fa-solid fa-unlock"></i><span class="hidden sm:inline">Admin Activo</span><span class="sm:hidden">Admin</span>`;
+            } else {
+                panel.classList.add('hidden');
+                btn.classList.remove('bg-emerald-400', 'text-sam-dark', 'font-bold');
+                btn.classList.add('bg-white/10', 'text-white');
+                btn.innerHTML = `<i class="fa-solid fa-sliders"></i><span class="hidden sm:inline">Modo Administrador</span><span class="sm:hidden">Admin</span>`;
+            }
+            renderProducts();
+        }
+
+        function openLoginModal() {
+            document.getElementById('admin-pass-input').value = '';
+            document.getElementById('login-error-msg').classList.add('hidden');
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('admin-pass-input').focus(), 100);
+        }
+
+        function closeLoginModal() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+        }
+
+        function verifyAdminLogin(e) {
+            e.preventDefault();
+            const entered = document.getElementById('admin-pass-input').value;
+            if (entered === adminPassword) {
+                isAuthenticated = true;
+                sessionStorage.setItem('sam_admin_auth', 'true');
+                closeLoginModal();
+                setAdminPanelState(true);
+                showToast('Acceso concedido. Bienvenido, Administrador.');
+            } else {
+                document.getElementById('login-error-msg').classList.remove('hidden');
+                document.getElementById('admin-pass-input').value = '';
+                document.getElementById('admin-pass-input').focus();
+            }
+        }
+
+        function logoutAdmin() {
+            isAuthenticated = false;
+            sessionStorage.removeItem('sam_admin_auth');
+            setAdminPanelState(false);
+            showToast('Sesión de administrador cerrada y bloqueada.');
+        }
+
+        function openPasswordModal() {
+            if (!isAuthenticated) return;
+            document.getElementById('current-admin-pass').value = '';
+            document.getElementById('new-admin-pass').value = '';
+            document.getElementById('password-modal').classList.remove('hidden');
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').classList.add('hidden');
+        }
+
+        function saveNewPassword(e) {
+            e.preventDefault();
+            const current = document.getElementById('current-admin-pass').value;
+            const next = document.getElementById('new-admin-pass').value.trim();
+            if (current !== adminPassword) {
+                showToast('La clave actual no coincide.');
+                return;
+            }
+            adminPassword = next;
+            sessionStorage.setItem('sam_admin_pass', adminPassword);
+            closePasswordModal();
+            showToast('Contraseña de administrador actualizada con éxito.');
+        }
+
+        function togglePassVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function openProductModal(id = null) {
+            if (!isAuthenticated) { openLoginModal(); return; }
+            const modal = document.getElementById('product-modal');
+            const title = document.getElementById('modal-product-title');
+            const form = document.getElementById('product-form');
+            form.reset();
+            clearProductImage();
+
+            if (id) {
+                const product = products.find(p => p.id === id);
+                if (!product) return;
+                title.textContent = 'Modificar Artículo';
+                document.getElementById('prod-id').value = product.id;
+                document.getElementById('prod-name').value = product.name;
+                document.getElementById('prod-price').value = product.price;
+                document.getElementById('prod-condition').value = product.condition;
+                document.getElementById('prod-category').value = product.category;
+                document.getElementById('prod-image').value = product.image || '';
+                if (product.image) {
+                    updatePreviewFromUrl(product.image);
+                }
+                document.getElementById('prod-desc').value = product.description;
+            } else {
+                title.textContent = 'Cargar Nuevo Artículo';
+                document.getElementById('prod-id').value = '';
+            }
+            modal.classList.remove('hidden');
+        }
+
+        // Procesar imagen seleccionada desde la galería del dispositivo
+        function handleGalleryUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // Redimensionar suavemente para mantener la tienda rápida y fluida
+                    const canvas = document.createElement('canvas');
+                    const maxSize = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height && width > maxSize) {
+                        height = Math.round((height * maxSize) / width);
+                        width = maxSize;
+                    } else if (height > maxSize) {
+                        width = Math.round((width * maxSize) / height);
+                        height = maxSize;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+                    document.getElementById('prod-image').value = compressedDataUrl;
+                    updatePreviewFromUrl(compressedDataUrl);
+                    showToast('Foto cargada desde tu galería.');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updatePreviewFromUrl(src) {
+            const previewBox = document.getElementById('prod-image-preview-box');
+            const previewImg = document.getElementById('prod-image-preview');
+            if (src && src.trim() !== '') {
+                previewImg.src = src.trim();
+                previewBox.classList.remove('hidden');
+            } else {
+                previewBox.classList.add('hidden');
+                previewImg.src = '';
+            }
+        }
+
+        function clearProductImage() {
+            document.getElementById('prod-file').value = '';
+            document.getElementById('prod-image').value = '';
+            updatePreviewFromUrl('');
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            if (!isAuthenticated) return;
+            const idVal = document.getElementById('prod-id').value;
+            const newProductData = {
+                id: idVal ? Number(idVal) : Date.now(),
+                name: document.getElementById('prod-name').value.trim(),
+                price: parseFloat(document.getElementById('prod-price').value),
+                condition: document.getElementById('prod-condition').value,
+                category: document.getElementById('prod-category').value,
+                image: document.getElementById('prod-image').value.trim(),
+                description: document.getElementById('prod-desc').value.trim()
+            };
+
+            if (idVal) {
+                const index = products.findIndex(p => p.id === Number(idVal));
+                if (index !== -1) products[index] = newProductData;
+                showToast('Artículo actualizado correctamente.');
+            } else {
+                products.unshift(newProductData);
+                showToast('¡Nuevo artículo agregado al catálogo!');
+            }
+
+            closeProductModal();
+            renderProducts();
+        }
+
+        function askDeleteProduct(id) {
+            if (!isAuthenticated) { openLoginModal(); return; }
+            productToDeleteId = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            productToDeleteId = null;
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+            if (productToDeleteId !== null) {
+                products = products.filter(p => p.id !== productToDeleteId);
+                renderProducts();
+                showToast('Artículo eliminado del catálogo.');
+            }
+            closeDeleteModal();
+        });
+
+        // ==========================================
+        // CONFIGURACIÓN DE WHATSAPP Y CORREO
+        // ==========================================
+        function openSettingsModal() {
+            if (!isAuthenticated) { openLoginModal(); return; }
+            document.getElementById('set-whatsapp').value = storeSettings.whatsapp;
+            document.getElementById('set-email').value = storeSettings.email;
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function saveSettings(e) {
+            e.preventDefault();
+            storeSettings.whatsapp = document.getElementById('set-whatsapp').value.replace(/\D/g, '');
+            storeSettings.email = document.getElementById('set-email').value.trim();
+            updateHeaderContactInfo();
+            closeSettingsModal();
+            showToast('Datos de WhatsApp y Correo actualizados.');
+        }
+
+        function updateHeaderContactInfo() {
+            document.getElementById('header-contact-preview').textContent = 
+                `WhatsApp: +${storeSettings.whatsapp} | ${storeSettings.email}`;
+        }
+
+        // ==========================================
+        // CHAT DE CONTACTO (WHATSAPP Y EMAIL)
+        // ==========================================
+        function toggleChatWidget() {
+            const win = document.getElementById('chat-window');
+            win.classList.toggle('hidden');
+        }
+
+        function openChatWidget() {
+            document.getElementById('chat-window').classList.remove('hidden');
+        }
+
+        function inquireProduct(productName, price) {
+            openChatWidget();
+            document.getElementById('chat-product').value = `${productName} ($${Number(price).toFixed(2)})`;
+            document.getElementById('chat-message').value = `Hola, me interesa el artículo "${productName}". ¿Sigue disponible?`;
+            document.getElementById('chat-name').focus();
+        }
+
+        function buildContactMessage() {
+            const name = document.getElementById('chat-name').value.trim() || 'Cliente';
+            const product = document.getElementById('chat-product').value.trim() || 'Consulta general';
+            const delivery = document.getElementById('chat-delivery').value;
+            const msg = document.getElementById('chat-message').value.trim() || 'Hola, quisiera más información.';
+
+            return `Hola *SAM ELECTRONICS MARKET* 👋\n\n` +
+                   `• *Nombre:* ${name}\n` +
+                   `• *Artículo:* ${product}\n` +
+                   `• *Modalidad:* ${delivery}\n` +
+                   `• *Mensaje:* ${msg}`;
+        }
+
+        function sendToWhatsApp() {
+            const text = encodeURIComponent(buildContactMessage());
+            const url = `https://wa.me/${storeSettings.whatsapp}?text=${text}`;
+            window.open(url, '_blank');
+            showToast('Abriendo WhatsApp con tu mensaje...');
+        }
+
+        function sendToEmail() {
+            const product = document.getElementById('chat-product').value.trim() || 'Consulta Web';
+            const subject = encodeURIComponent(`Consulta Sam Electronics Market: ${product}`);
+            const body = encodeURIComponent(buildContactMessage().replace(/\*/g, ''));
+            const mailtoUrl = `mailto:${storeSettings.email}?subject=${subject}&body=${body}`;
+            window.open(mailtoUrl, '_blank');
+            showToast('Abriendo tu cliente de correo electrónico...');
+        }
+
+        // ==========================================
+        // NOTIFICACIONES VISUALES (TOAST)
+        // ==========================================
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-lg border border-emerald-500/40 flex items-center gap-2.5 transition-all duration-300';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        // Inicializar aplicación al cargar
+        window.onload = function() {
+            updateHeaderContactInfo();
+            if (isAuthenticated) {
+                setAdminPanelState(true);
+            } else {
+                renderProducts();
+            }
+        };
+    </script>
+</body>
+</html>
